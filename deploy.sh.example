@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# 'exit' to ensure the ssh connection gets terminated
+RESTART_BOT="sudo systemctl restart raidbot-api && exit"
+
+# create jar
+echo Creating jar...
+./gradlew bootJar
+
+# deploy to gcloud
+echo Deploying to gcloud...
+gcloud compute scp build/libs/raid-applicants-distributor-0.0.1-SNAPSHOT.jar {YOUR_VM_NAME}:{YOUR_VM_DIRECTORY}
+
+# restart bot on gcloud
+echo Restarting bot...
+gcloud compute ssh {YOUR_VM_NAME} --zone={YOUR_VM_ZONE} --command="$RESTART_BOT"
+
+echo Done!

@@ -1,0 +1,10 @@
+[Unit]
+Description=raid-bot-api
+[Service]
+WorkingDirectory={YOUR_WORKING_DIRECTORY}
+ExecStart=java -jar {YOUR_WORKING_DIRECTORY}/raid-applicants-distributor-0.0.1-SNAPSHOT.jar
+Environment=GOOGLE_APPLICATION_CREDENTIALS={YOUR_CREDENTIAL_FILE_PATH}
+Restart=on-failure
+User={YOUR_USERNAME}
+[Install]
+WantedBy=default.target
