@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
-import java.util.Locale;
+import java.util.*;
 
 public abstract class DateUtil {
 
@@ -16,7 +16,7 @@ public abstract class DateUtil {
         if (possibleDayToRaid.equals("1")) {
             return DayOfWeek.WEDNESDAY.toString();
         }
-        if ( possibleDayToRaid.equals("2")) {
+        if (possibleDayToRaid.equals("2")) {
             return DayOfWeek.THURSDAY.toString();
         }
         if (possibleDayToRaid.equals("3")) {
@@ -46,7 +46,7 @@ public abstract class DateUtil {
     }
 
     public static LocalDateTime getNextRaidingDate(@NonNull final String day) {
-        return getNextRaidingDate(convertToDayOfWeek(day));
+        return getNextRaidingDate(DayOfWeek.valueOf(day));
     }
 
     public static DayOfWeek convertToDayOfWeek(@NonNull final String day) {
@@ -69,5 +69,24 @@ public abstract class DateUtil {
 
     public static String format(DayOfWeek raidingDay, TextStyle textStyle, Locale locale) {
         return raidingDay.getDisplayName(textStyle, locale);
+    }
+
+    public static Map<String, Set<CharacterData>> sortByRaidingDay(final Map<String, Set<CharacterData>> mapToSort) {
+        List<Map.Entry<String, Set<CharacterData>>> list = new ArrayList<>(mapToSort.entrySet());
+        list.sort(Map.Entry.comparingByKey(new RaidingDayComparator()));
+
+        Map<String, Set<CharacterData>> sortedMap = new LinkedHashMap<>();
+        list.forEach(entry -> sortedMap.put(entry.getKey(), entry.getValue()));
+        return sortedMap;
+    }
+
+    public static class RaidingDayComparator implements Comparator<String> {
+
+        public int compare(@NonNull final String raidingDay1, @NonNull final String raidingDay2) {
+            return RaidingWeekDay
+                .valueOf(raidingDay1)
+                .getValue()
+                .compareTo(RaidingWeekDay.valueOf(raidingDay2).getValue());
+        }
     }
 }
