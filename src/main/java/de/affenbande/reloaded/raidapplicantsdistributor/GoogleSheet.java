@@ -12,6 +12,7 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.logging.Logger;
@@ -44,22 +45,25 @@ public class GoogleSheet {
         return spreadsheet;
     }
 
-    private List<Sheet> addSheets(@NonNull final String spreadSheetId, int suggestedRaidEventsSize)
-        throws IOException, GeneralSecurityException {
+    private List<Sheet> addSheets(
+        @NonNull final String spreadSheetId, final int suggestedRaidEventsSize, final boolean bench
+    ) throws IOException, GeneralSecurityException {
         final List<Request> requests = new ArrayList<>();
 
         for (int i = 1; i <= suggestedRaidEventsSize; ++i) {
-            final AddSheetRequest addSheetRequest = new AddSheetRequest().setProperties(
-                new SheetProperties().setTitle("Raid-" + i));
+            final AddSheetRequest addSheetRequest;
+            if (!bench) {
+                addSheetRequest = new AddSheetRequest().setProperties(
+                    new SheetProperties().setTitle("Raid-" + i));
+            } else {
+                addSheetRequest = new AddSheetRequest().setProperties(
+                    new SheetProperties().setTitle(SuggestedRaidEventService.BENCH));
+            }
             requests.add(new Request().setAddSheet(addSheetRequest));
         }
 
         final DeleteSheetRequest deleteSheetRequest = new DeleteSheetRequest().setSheetId(0);
         requests.add(new Request().setDeleteSheet(deleteSheetRequest));
-
-        final AddSheetRequest addSheetRequest = new AddSheetRequest().setProperties(
-            new SheetProperties().setTitle("Bench"));
-        requests.add(new Request().setAddSheet(addSheetRequest));
 
         final BatchUpdateSpreadsheetRequest request = new BatchUpdateSpreadsheetRequest()
             .setRequests(requests)
@@ -75,12 +79,12 @@ public class GoogleSheet {
 
     private Map<String, List<List<Object>>> addRaidData(
         @NonNull final String spreadSheetId, @NonNull final Set<SuggestedRaidEvent> suggestedRaidEvents,
-        @NonNull final Set<CharacterData> bench, @NonNull final List<Sheet> sheets
+        @NonNull final List<Sheet> sheets
     ) throws GeneralSecurityException, IOException {
-        if (sheets.size() != suggestedRaidEvents.size() + 1) {
+        if (sheets.size() != suggestedRaidEvents.size()) {
             throw new InputMismatchException("Spreadsheet.Sheets size (" + sheets.size() +
                                                  ") did not match the expected size of suggestedRaidEvents and bench " +
-                                                 "(" + (suggestedRaidEvents.size() + 1) + ")");
+                                                 "(" + (suggestedRaidEvents.size()) + ")");
         }
         final Map<String, List<List<Object>>> raidData = new TreeMap<>();
         final Set<SuggestedRaidEvent> suggestedRaidEventSet = new HashSet<>(suggestedRaidEvents);
@@ -91,27 +95,23 @@ public class GoogleSheet {
             if (suggestedRaidEvent != null) {
                 final List<CharacterData> characters = new ArrayList<>(suggestedRaidEvent.getParticipants());
                 characters.sort(new CharacterDataComparator());
-                rows.add(List.of("Team " + suggestedRaidEvent.getRaidLead().getName()));
+                if (suggestedRaidEvent.getRaidLead() != null) {
+                    rows.add(List.of("Team " + suggestedRaidEvent.getRaidLead().getName()));
+                } else {
+                    rows.add(List.of(SuggestedRaidEventService.BENCH));
+                }
                 rows.add(List.of(""));
-                rows.add(List.of("Raidmember", "Role", "Class", "Specialization"));
+                rows.add(List.of("Raidmember", "Role", "Class", "Specialization", "Raidlead", "Raiding Days"));
 
                 for (final CharacterData character : characters) {
+                    StringBuilder raidingDays = new StringBuilder();
+                    for (final String raidingDay : character.getPossibleDaysToRaid()) {
+                        raidingDays.append(raidingDay).append(", ");
+                    }
                     rows.add(List.of(character.getName(), character.getRole(), character.getCharacterClass(),
-                                     character.getSpec()
+                                     character.getSpec(), character.isRaidLead(),
+                                     raidingDays.substring(0, raidingDays.length() - 2)
                     ));
-                }
-            } else if (bench.size() > 0) {
-                final List<CharacterData> benchedPlayers = new ArrayList<>(bench);
-                benchedPlayers.sort(new CharacterDataComparator());
-                rows.add(List.of(sheet.getProperties().getTitle()));
-                rows.add(List.of(""));
-                rows.add(List.of("Raidmember", "Role", "Class", "Specialization"));
-
-                for (final CharacterData benchedPlayer : benchedPlayers) {
-                    rows.add(
-                        List.of(benchedPlayer.getName(), benchedPlayer.getRole(), benchedPlayer.getCharacterClass(),
-                                benchedPlayer.getSpec()
-                        ));
                 }
             }
 
@@ -134,18 +134,24 @@ public class GoogleSheet {
     }
 
     public String createRaidSheetForPossibleRaidingDay(
-        final String raidingDay, final Set<SuggestedRaidEvent> suggestedRaidEvents, final Set<CharacterData> bench
+        final String raidingDay, final Set<SuggestedRaidEvent> suggestedRaidEvents
     ) throws IOException, GeneralSecurityException {
-        final LocalDateTime raidingDate = DateUtil.getNextRaidingDate(raidingDay);
-        final String raidingDateFormatted = DateUtil.format(raidingDate);
-        final String title = raidingDateFormatted + " - " +
-            suggestedRaidEvents.stream().findAny().orElseThrow().getRaidDestination();
+        final SuggestedRaidEvent suggestedRaidEvent = suggestedRaidEvents.stream().findAny().orElseThrow();
+        final String title;
+        final boolean bench = raidingDay.equals(SuggestedRaidEventService.BENCH);
+        if (!bench) {
+            final LocalDateTime raidingDate = DateUtil.getNextRaidingDate(raidingDay);
+            final String raidingDateFormatted = DateUtil.format(raidingDate);
+            title = raidingDateFormatted + " - " + suggestedRaidEvent.getRaidDestination();
+        } else {
+            title = suggestedRaidEvent.getRaidDestination() + " - " + SuggestedRaidEventService.BENCH;
+        }
 
         final Spreadsheet spreadSheet = create(title);
         final String spreadSheetId = spreadSheet.getSpreadsheetId();
-        final List<Sheet> sheets = addSheets(spreadSheetId, suggestedRaidEvents.size());
+        final List<Sheet> sheets = addSheets(spreadSheetId, suggestedRaidEvents.size(), bench);
 
-        addRaidData(spreadSheetId, suggestedRaidEvents, bench, sheets);
+        addRaidData(spreadSheetId, suggestedRaidEvents, sheets);
 
         return spreadSheetId;
     }

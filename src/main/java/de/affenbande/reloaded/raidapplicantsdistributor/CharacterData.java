@@ -28,10 +28,7 @@ public class CharacterData {
     String role;
     int benchCount;
 
-
     public static class CharacterDataComparator implements Comparator<CharacterData> {
-        public CharacterDataComparator() {
-        }
 
         public int compare(@NonNull final CharacterData character1, @NonNull final CharacterData character2) {
             int roleCompare = CharacterRole
