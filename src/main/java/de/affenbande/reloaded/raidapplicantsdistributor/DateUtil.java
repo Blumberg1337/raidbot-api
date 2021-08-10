@@ -26,7 +26,7 @@ public abstract class DateUtil {
             return DayOfWeek.SATURDAY.toString();
         }
         if (possibleDayToRaid.equals("5")) {
-            return DayOfWeek.SUNDAY.toString();:
+            return DayOfWeek.SUNDAY.toString();
         }
         if (possibleDayToRaid.equals("6")) {
             return DayOfWeek.MONDAY.toString();
