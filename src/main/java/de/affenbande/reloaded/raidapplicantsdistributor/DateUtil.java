@@ -13,25 +13,25 @@ import java.util.Locale;
 public abstract class DateUtil {
 
     public static String convertPossibleDayToRaid(final String possibleDayToRaid) {
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("mi") || possibleDayToRaid.equals("1")) {
+        if (possibleDayToRaid.equals("1")) {
             return DayOfWeek.WEDNESDAY.toString();
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("do") || possibleDayToRaid.equals("2")) {
+        if ( possibleDayToRaid.equals("2")) {
             return DayOfWeek.THURSDAY.toString();
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("fr") || possibleDayToRaid.equals("3")) {
+        if (possibleDayToRaid.equals("3")) {
             return DayOfWeek.FRIDAY.toString();
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("sa") || possibleDayToRaid.equals("4")) {
+        if (possibleDayToRaid.equals("4")) {
             return DayOfWeek.SATURDAY.toString();
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("so") || possibleDayToRaid.equals("5")) {
-            return DayOfWeek.SUNDAY.toString();
+        if (possibleDayToRaid.equals("5")) {
+            return DayOfWeek.SUNDAY.toString();:
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("mo") || possibleDayToRaid.equals("6")) {
+        if (possibleDayToRaid.equals("6")) {
             return DayOfWeek.MONDAY.toString();
         }
-        if (possibleDayToRaid.toLowerCase(Locale.GERMAN).startsWith("di") || possibleDayToRaid.equals("7")) {
+        if (possibleDayToRaid.equals("7")) {
             return DayOfWeek.TUESDAY.toString();
         } else {
             throw new DateTimeException("Couldn't convert possibleDayToRaid-value: " + possibleDayToRaid);
