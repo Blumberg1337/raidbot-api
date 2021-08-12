@@ -12,9 +12,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum CharacterRole {
     TANK(List.of("tank", "protection"), List.of("Wilder Kampf (Tank)", "Schutz")),
-    HEAL(List.of("restoration", "holy"), List.of("Wiederherstellung", "Heilig")),
-    RANGED(List.of("balance", "beast_mastery", "marksmanship", "survival", "arcane", "fire", "frost", "shadow", "elemental", "affliction", "demonology", "destruction"), List.of("Gleichgewicht", "Tierherrschaft", "Treffsicherheit", "Überleben", "Arkan", "Feuer", "Frost", "Schatten", "Elementar", "Gebrechen", "Dämonologie", "Zerstörung")),
-    MELEE(List.of("feral", "retribution", "assassination", "combat", "subtlety", "enhancement", "arms", "fury"), List.of("Wilder Kampf (Katze)", "Vergeltung", "Meucheln", "Kampf", "Täuschung", "Verstärkung", "Waffen", "Furor"));
+    HEAL(List.of("restoration", "discipline", "holy"), List.of("Wiederherstellung", "Disziplin", "Heilig")),
+    RANGED(List.of("balance", "beast_mastery", "marksmanship", "survival", "arcane", "fire", "frost", "shadow",
+                   "elemental", "affliction", "demonology", "destruction"
+    ), List.of("Gleichgewicht", "Tierherrschaft", "Treffsicherheit", "Überleben", "Arkan", "Feuer", "Frost", "Schatten",
+               "Elementar", "Gebrechen", "Dämonologie", "Zerstörung"
+    )),
+    MELEE(List.of("feral", "retribution", "assassination", "combat", "subtlety", "enhancement", "arms", "fury"),
+          List.of("Wilder Kampf (Katze)", "Vergeltung", "Meucheln", "Kampf", "Täuschung", "Verstärkung", "Waffen",
+                  "Furor"
+          )
+    );
 
     List<String> associatedSpecs;
     List<String> associatedSpecNames;
