@@ -40,4 +40,4 @@ out/
 ### Credentials ###
 **/tokens/StoredCredential
 **/client-secrets.json
-**/raid-applicants-distributor-be25fdbc6c72.json
+src/main/resources/raid-applicants-distributor-*.json
