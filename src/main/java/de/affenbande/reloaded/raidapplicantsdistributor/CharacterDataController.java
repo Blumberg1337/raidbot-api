@@ -44,4 +44,9 @@ public class CharacterDataController {
     public void deleteAll() {
         characterDataService.deleteAll();
     }
+
+    @PostMapping(path = "/update/addIds")
+    public List<CharacterData> updateIds() {
+        return characterDataService.addNamesToCharacters();
+    }
 }
