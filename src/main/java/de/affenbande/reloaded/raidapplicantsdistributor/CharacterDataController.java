@@ -24,7 +24,7 @@ public class CharacterDataController {
 
     @GetMapping(path = "/{name}", produces = "application/json")
     public CharacterData getByName(@PathVariable @NonNull String name) {
-        return characterDataService.getByName(name);
+        return characterDataService.getById(name);
     }
 
     @PostMapping(path = {"/create"})
@@ -43,10 +43,5 @@ public class CharacterDataController {
     @GetMapping(path = "/deleteAll")
     public void deleteAll() {
         characterDataService.deleteAll();
-    }
-
-    @PostMapping(path = "/update/addIds")
-    public List<CharacterData> updateIds() {
-        return characterDataService.addNamesToCharacters();
     }
 }
