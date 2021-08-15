@@ -12,8 +12,8 @@ import lombok.NonNull;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -53,8 +53,7 @@ public class GoogleSheet {
         for (int i = 1; i <= suggestedRaidEventsSize; ++i) {
             final AddSheetRequest addSheetRequest;
             if (!bench) {
-                addSheetRequest = new AddSheetRequest().setProperties(
-                    new SheetProperties().setTitle("Raid-" + i));
+                addSheetRequest = new AddSheetRequest().setProperties(new SheetProperties().setTitle("Raid-" + i));
             } else {
                 addSheetRequest = new AddSheetRequest().setProperties(
                     new SheetProperties().setTitle(SuggestedRaidEventService.BENCH));
@@ -139,12 +138,14 @@ public class GoogleSheet {
         final SuggestedRaidEvent suggestedRaidEvent = suggestedRaidEvents.stream().findAny().orElseThrow();
         final String title;
         final boolean bench = raidingDay.equals(SuggestedRaidEventService.BENCH);
+        final LocalDateTime raidingDate = DateUtil.getNextRaidingDate(raidingDay);
         if (!bench) {
-            final LocalDateTime raidingDate = DateUtil.getNextRaidingDate(raidingDay);
             final String raidingDateFormatted = DateUtil.format(raidingDate);
             title = raidingDateFormatted + " - " + suggestedRaidEvent.getRaidDestination();
         } else {
-            title = suggestedRaidEvent.getRaidDestination() + " - " + SuggestedRaidEventService.BENCH;
+            final int weekOfYear = raidingDate.get(WeekFields.of(Locale.GERMANY).weekOfYear());
+            title = suggestedRaidEvent.getRaidDestination() + " - " + SuggestedRaidEventService.BENCH + " - KW" +
+                weekOfYear;
         }
 
         final Spreadsheet spreadSheet = create(title);

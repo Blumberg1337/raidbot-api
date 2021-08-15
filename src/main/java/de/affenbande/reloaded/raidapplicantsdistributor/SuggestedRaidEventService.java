@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -265,7 +266,7 @@ public class SuggestedRaidEventService {
                             suggestedRaidEventsByDays.put(possibleRaid.getKey(), new HashSet<>());
                         }
                         final String suggestedRaidId = suggestedRaidEventsCount + "-" + karazhanStr + "-" +
-                            LocalDateTime.now();
+                            LocalDateTime.now(ZoneId.of("Europe/Berlin"));
                         final SuggestedRaidEvent suggestedRaidEvent = SuggestedRaidEvent
                             .builder()
                             .name(suggestedRaidId)
@@ -303,7 +304,7 @@ public class SuggestedRaidEventService {
 
         final SuggestedRaidEvent bench = SuggestedRaidEvent
             .builder()
-            .name(BENCH + LocalDateTime.now())
+            .name(BENCH + "-" + LocalDateTime.now(ZoneId.of("Europe/Berlin")))
             .raidDestination(karazhanStr)
             .raidSize(benchedPlayers.size())
             .participants(benchedPlayers)

@@ -5,6 +5,7 @@ import lombok.NonNull;
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.TemporalAdjusters;
@@ -40,7 +41,7 @@ public abstract class DateUtil {
 
     public static LocalDateTime getNextRaidingDate(@NonNull final DayOfWeek dayOfWeek) {
         return LocalDateTime
-            .now()
+            .now(ZoneId.of("Europe/Berlin"))
             .with(TemporalAdjusters.next(DayOfWeek.WEDNESDAY))
             .with(TemporalAdjusters.nextOrSame(dayOfWeek));
     }
