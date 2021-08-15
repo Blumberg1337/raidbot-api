@@ -16,7 +16,7 @@ import java.util.List;
 @Document(collectionName = "suggestedRaids")
 public class SuggestedRaidEvent {
 
-    @DocumentId private String name;
+    @DocumentId String name;
     int raidSize;
     String raidDestination;
     List<CharacterData> participants;

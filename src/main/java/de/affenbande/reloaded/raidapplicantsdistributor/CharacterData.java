@@ -17,8 +17,8 @@ import java.util.List;
 @Document(collectionName = "characters")
 public class CharacterData {
 
-    @DocumentId private String id;
-    private String name;
+    @DocumentId String id;
+    String name;
     String characterClass;
     String spec;
     boolean offTank;
