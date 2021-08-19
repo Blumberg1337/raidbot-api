@@ -1,5 +1,6 @@
 package de.affenbande.reloaded.raidapplicantsdistributor;
 
+import de.affenbande.reloaded.raidapplicantsdistributor.satsolver.SuggestedRaidEventServiceSat;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,9 +19,15 @@ import java.util.List;
 public class SuggestedRaidEventController {
 
     SuggestedRaidEventService suggestedRaidEventService;
+    SuggestedRaidEventServiceSat suggestedRaidEventServiceSat;
 
     @PostMapping(path = "/create")
     public List<SuggestedRaidEvent> create() throws GeneralSecurityException, IOException {
         return suggestedRaidEventService.create("a");
+    }
+
+    @PostMapping(path = "/create/sat")
+    public String createSat() throws GeneralSecurityException, IOException {
+        return suggestedRaidEventServiceSat.create("Test raid computed by MiniSAT");
     }
 }
